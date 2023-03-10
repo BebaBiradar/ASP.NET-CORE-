@@ -1,0 +1,484 @@
+Employee form using ASP.NET
+-------------------------------
+link
+=========
+SQLSERVER=V18.12.1
+VISUAL STUDIO 2019
+ASP.NET WEB APPLICATION (FRAMEWORK)
+bootstrap 3 cdn = copy css link
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"rel="stylesheet" />
+youtub=inform techi(Gridview insert update delete using stored procedures in Asp.Net | crud using stored procedure c#)
+VR learning=HOW TO CREATE SQL DATABASE CONNECTION IN ASP.NET VISUAL STUDIO 2010 HD(SQL SERVER TO VISUAL connection)
+
+CODE FOR PROJECT
+===============
+ASPX.CS FILE CODE(ASP.NET)
+----------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data.SqlClient;
+
+
+namespace WebApplication2
+{
+    public partial class WebForm1 : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if(!IsPostBack)
+            {
+                GetData();
+            }
+        }
+
+        private void GetData()
+        {
+            string cs = "data source= DESKTOP-25RH1OL\\SQLEXPRESS; database = TestDB; Integrated security= true";
+            SqlConnection con = new SqlConnection(cs);
+            SqlCommand cmd = new SqlCommand("spGetData", con);
+            con.Open();
+            empgrid.DataSource = cmd.ExecuteReader();
+            empgrid.DataBind();
+            con.Close();
+        }
+
+        protected void btnsubmit_Click(object sender, EventArgs e)
+        {
+            string cs = "data source= DESKTOP-25RH1OL\\SQLEXPRESS; database = TestDB; Integrated security= true";
+            SqlConnection con = new SqlConnection(cs);
+            string fname = txtfname.Text;
+            string lname = txtlname.Text;
+            int age = Convert.ToInt32(txtage.Text);
+            int salary = Convert.ToInt32(txtsalary.Text);
+
+            SqlCommand cmd = new SqlCommand("spInsert", con);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@fname", fname);
+            cmd.Parameters.AddWithValue("@lname", lname);
+            cmd.Parameters.AddWithValue("@age", age);
+            cmd.Parameters.AddWithValue("@salary",salary);
+            con.Open();
+            cmd.ExecuteNonQuery();
+            con.Close();
+            lblmsg.Text = "Record Inserted!....";
+
+            txtfname.Text = "";
+            txtlname.Text = "";
+            txtage.Text = "";
+            txtsalary.Text = "";
+        }
+
+        protected void empgrid_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            int id = Convert.ToInt32(empgrid.DataKeys[e.RowIndex].Value);
+            string cs = "data source= DESKTOP-25RH1OL\\SQLEXPRESS; database = TestDB; Integrated security= true";
+            SqlConnection con = new SqlConnection(cs);
+            SqlCommand cmd = new SqlCommand("spDelete", con);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@Empid", id);
+            con.Open();
+            cmd.ExecuteNonQuery();
+            con.Close();
+
+            GetData();
+        }
+
+        protected void empgrid_RowEditing(object sender, GridViewEditEventArgs e)
+        {
+            empgrid.EditIndex = e.NewEditIndex;
+            GetData();
+        }
+
+        protected void empgrid_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
+        {
+            empgrid.EditIndex = -1;
+            GetData();
+        }
+
+        protected void empgrid_RowUpdating(object sender, GridViewUpdateEventArgs e)
+        {
+            string cs = "data source= DESKTOP-25RH1OL\\SQLEXPRESS; database = TestDB; Integrated security= true";
+            SqlConnection con = new SqlConnection(cs);
+            int id = Convert.ToInt32(empgrid.DataKeys[e.RowIndex].Value);
+            string fname = (empgrid.Rows[e.RowIndex].FindControl("txtfname")as TextBox).Text;
+            string lname = (empgrid.Rows[e.RowIndex].FindControl("txtlname") as TextBox).Text;
+            int age = Convert.ToInt32((empgrid.Rows[e.RowIndex].FindControl("txtage") as TextBox).Text);
+            int salary = Convert.ToInt32((empgrid.Rows[e.RowIndex].FindControl("txtage") as TextBox).Text);
+
+            SqlCommand cmd = new SqlCommand("spUpdate", con);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@FirstName", fname);
+            cmd.Parameters.AddWithValue("@LastName", lname);
+            cmd.Parameters.AddWithValue("@Age", age);
+            cmd.Parameters.AddWithValue("@Salary", salary);
+            cmd.Parameters.AddWithValue("@Empid", id);
+            con.Open();
+            cmd.ExecuteNonQuery();
+            con.Close();
+            empgrid.EditIndex = -1;
+            GetData();
+
+        }
+    }
+}
+
+HTML CODE(WEBFORM.ASPX)
+-------
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebForm1.aspx.cs" Inherits="WebApplication2.WebForm1" %>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"rel="stylesheet" />
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="col-md-8">
+            <table class="table">
+                <tr>
+                    <th>First Name</th>
+                    <td> <asp:TextBox runat="server" ID="txtfname"
+                        CssClass="form-control"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <th>First Name</th>
+                    <td> <asp:TextBox runat="server" ID="txtlname"
+                        CssClass="form-control"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <th>Age</th>
+                    <td> <asp:TextBox runat="server" ID="txtage"
+                        CssClass="form-control"></asp:TextBox></td>
+                </tr>
+                
+                <tr>
+                    <th>Salary</th>
+                    <td> <asp:TextBox runat="server" ID="txtsalary"
+                        CssClass="form-control"></asp:TextBox></td>
+                </tr>
+               <tr>
+                   <td>
+                       <asp:Button runat="server" ID="btnsubmit" Text="Submit"
+                           CssClass="btn btn-success" OnClick="btnsubmit_Click" />
+                   </td>
+               </tr>
+                <tr>
+                  
+                       <td> <asp:Button  runat="server" ID="btncancel"  Text ="Cancel"
+                           CssClass="btn btn-danger"/></td>
+
+                   
+               </tr>
+                <asp:Label runat="server" ID="lblmsg"></asp:Label>
+              
+            </table>
+            <div class="col-md-offset-2" "col-md-offset-2"> 
+                <asp:GridView ID="empgrid" runat="server"  CssClass="table"
+                    OnRowDeleting="empgrid_RowDeleting"
+                    OnRowEditing="empgrid_RowEditing"
+                    OnRowUpdating="empgrid_RowUpdating"
+                    OnRowCancelingEdit="empgrid_RowCancelingEdit"
+                    
+                    DataKeyNames="Empid"
+                    AutoGenerateColumns="false">
+                    <Columns>
+                         <asp:BoundField HeaderText="Employee Id" DataField="Empid"  ReadOnly="true"/>
+                       <asp:TemplateField HeaderText="FirstName">
+                           <ItemTemplate>
+                               <asp:Label runat="server" Text='<%# Eval("FirstName") %>'></asp:Label>
+                           </ItemTemplate>
+                           <EditItemTemplate>
+                               <asp:TextBox  ID="txtfname" runat="server" 
+                                   Text='<%# Bind("FirstName") %>'></asp:TextBox>
+                           </EditItemTemplate>
+                       </asp:TemplateField>
+                          <asp:TemplateField HeaderText="LastName">
+                           <ItemTemplate>
+                               <asp:Label runat="server" Text='<%# Eval("LastName") %>'></asp:Label>
+                           </ItemTemplate>
+                           <EditItemTemplate>
+                               <asp:TextBox ID="txtlname" runat="server" Text='<%# Bind("LastName") %>'></asp:TextBox>
+                           </EditItemTemplate>
+                       </asp:TemplateField>
+                          <asp:TemplateField HeaderText="Age">
+                           <ItemTemplate>
+                               <asp:Label  runat="server" Text='<%# Eval("Age") %>'></asp:Label>
+                           </ItemTemplate>
+                           <EditItemTemplate>
+                               <asp:TextBox ID="txtage" runat="server" Text='<%# Bind("Age") %>'></asp:TextBox>
+                           </EditItemTemplate>
+                       </asp:TemplateField>
+                          <asp:TemplateField HeaderText="Salary">
+                           <ItemTemplate>
+                               <asp:Label runat="server" Text='<%# Eval("Salary") %>'></asp:Label>
+                           </ItemTemplate>
+                           <EditItemTemplate>
+                               <asp:TextBox  ID="txtsalary"  runat="server" Text='<%# Bind("Salary") %>'></asp:TextBox>
+                           </EditItemTemplate>
+                       </asp:TemplateField>
+                            
+                         
+
+                        <asp:CommandField ShowDeleteButton="true"
+                            ControlStyle-CssClass="btn btn-danger" HeaderText="Remove Record"/>
+                         <asp:CommandField ShowEditButton="true"
+                            ControlStyle-CssClass="btn btn-primary" HeaderText="Edite Record"/>
+                    </Columns>
+                   
+                   
+                </asp:GridView>
+            
+        </div>
+    </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+no
+==========
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Employee Form</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <table>
+                <tr>
+                    <th>First Name</th>
+                    <td> <asp:TextBox runat="server" ID="txtfname"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <th>First Name</th>
+                    <td> <asp:TextBox runat="server" ID="txtlname"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <th>Age</th>
+                    <td> <asp:TextBox runat="server" ID="txtage"></asp:TextBox></td>
+                </tr>
+                
+                <tr>
+                    <th>Salary</th>
+                    <td> <asp:TextBox runat="server" ID="txtsalary"></asp:TextBox></td>
+                </tr>
+               <tr>
+                   <td><asp:Button  runat="server" ID="btnsubmit" Text="Submit" /></td>
+               </tr>
+                <tr>
+                   <td><asp:Button  runat="server" ID="btncancel"  Text ="Cancel" /></td>
+               </tr>
+            </table>
+        </div>
+    </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+create database TestDB
+use TestDB
+create table Employee
+(Empid int identity primary key,
+FirstName varchar(50),
+LastName varchar(50),
+Age int,
+Salary int,
+);
+   create  procedure spInsert
+   @fname varchar(50),
+   @lname varchar(50),
+   @age int , 
+   @salary int
+   AS
+   BEGIN
+   insert into Employee values(@fname,@lname,@age,@salary);
+   END
+
+
+
+
+insert into Employee values('ajay','mishra',23,250000);
+insert into Employee values('rahual','jadhav',23,350000);
+insert into Employee values('akash','biradar',53,450000);
+select*from Employee;
+drop table Employee;
+
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-2">
+                        <lable>First Name</lable>
+                    </div>
+                    <div class="col-md-10">
+                        <asp:TextBox CssClass="form-control"ID="txtfname"runat="server"></asp:TextBox>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group"></div>
+             <div class="row">
+                    <div class="col-md-2">
+                        <lable>Last Name</lable>
+                    </div>
+                    <div class="col-md-10">
+                        <asp:TextBox CssClass="form-control"ID="TextBox1"runat="server"></asp:TextBox>
+                    </div>
+                </div>
+        </div>
+        <div class="form-group"></div>
+          <div class="row">
+                    <div class="col-md-2">
+                        <lable>Age</lable>
+                    </div>
+                    <div class="col-md-10">
+                        <asp:TextBox CssClass="form-control"ID="TextBox2"runat="server"></asp:TextBox>
+                    </div>
+                </div>
+              <div>
+                  <div class="form-group">
+                       <div class="row">
+                    <div class="col-md-2">
+                        <lable>Salary</lable>
+                    </div>
+                    <div class="col-md-10">
+                        <asp:TextBox CssClass="form-control"ID="TextBox3"runat="server"></asp:TextBox>
+                    </div>
+                </div>
+              </div>
+       <div class="form-group">
+           <div class="row">
+               <div class="col-md-offerset-1">
+                   <asp:Button runat="server" ID="btnsubmit"
+                       CssClass="btn btn-block btn-success"
+                       Text="Submit" />
+               </div>
+               <div class="col-md-2">
+                   <asp:Button runat="server"ID="btnclear"
+                       CssClass="btn btn-block btn-danger"
+                       Text="Clear" />
+
+               </div>
+           </div>
+       </div>
+      <br />
+        <asp:Label runat="server"ID="lblmsg"></asp:Label>
+      </div>
+    </form>
+</body>
+</html>
+
+
+
+KUDVENKAT

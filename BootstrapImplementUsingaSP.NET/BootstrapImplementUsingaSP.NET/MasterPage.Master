@@ -1,0 +1,41 @@
+﻿s<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MasterPage.Master.cs" Inherits="BootstrapImplementUsingaSP.NET.M" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title></title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <form id="form1" runat="server">
+        <%--the container used for the all web site data will be store in the that  --%>
+        <div class="container">  
+            <div class="row">
+                <header class="jumbotron">
+                    <h1 class="text-center">My new project</h1>
+
+                </header>
+                 </div>
+            <div>
+                <nav>
+
+                </nav>
+            </div>
+           
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+
+            </asp:ContentPlaceHolder>
+            <div class="row">
+                <footer class="well">
+                    <h1 class="text-center">All reserevd to the ABC company &copy</h1>
+                </footer>
+            </div>
+        </div>
+    </form>
+</body>
+    <script src="js/bootstrap.min.js"></script>
+</html>
+

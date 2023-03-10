@@ -1,0 +1,8 @@
+CONNECTION STRING
+=================
+<connectionStrings>
+<add name="dbcs2" connectionString="Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=F:\ASP.Net Core\LoginFormUsingASP.net\LoginFormUsingASP.net\App_Data\MyDatabase.mdf;Integrated Security=True" providerName="System.Data.SqlClient"/>
+</connectionStrings>
+*add name=anything,
+*connectionString=copy the data connection link(rigth click go to properties and copy the connectin string)
+)
